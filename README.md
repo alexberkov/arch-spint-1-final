@@ -55,15 +55,15 @@
 
 **Диаграмма контейнеров (Containers)**
 
-Добавьте диаграмму.
+[Диаграмма контейнеров новой системы](diagrams/container/WarmHouse_Container.puml)
 
 **Диаграмма компонентов (Components)**
 
-Добавьте диаграмму для каждого из выделенных микросервисов.
+[Диаграмма компонента новой системы](diagrams/component/WarmHouse_Component_HeatingService.puml)
 
 **Диаграмма кода (Code)**
 
-Добавьте одну диаграмму или несколько.
+[Диаграмма кода новой системы](diagrams/code/WarmHouse_Code_DeviceManager.puml)
 
 # Задание 3. Разработка ER-диаграммы
 
