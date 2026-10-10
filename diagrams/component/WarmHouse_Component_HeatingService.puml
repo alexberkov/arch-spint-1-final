@@ -1,0 +1,32 @@
+@startuml
+title WarmHouse Heating Service Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(WarmHouseSystem, "WarmHouse System") {
+  Container(HeatingService, "Heating Service", "Python, FastAPI", "Сервис управления отоплением в доме")
+  ContainerDb(DeviceDB, "Device Database", "PostgreSQL", "База данных устройств")
+  Container(DeviceMQ, "Device Message Queue", "RabbitMQ", "Уведомления от устройств")
+}
+
+Container(HeatingService, "Heating Service", "Python, FastAPI") {
+  Component(DeviceManagerAPI, "Device Manager API", "Обработка запросов по управлению устройствами")
+  Component(DeviceMonitoringAPI, "Device Monitoring API", "Обработка запросов по сбору данных с устройств")
+  Component(QueueListener, "Message Queue Listener", "Обработка уведомлений от устройств")
+  Component(ServiceLayer, "Service Layer", "Бизнес-логика сервиса")
+  Component(RepositoryLayer, "Repository Layer", "Доступ к данным в хранилище")
+}
+
+System_Ext(DeviceApi, "Device API", "API для управления устройствами")
+
+Rel(DeviceManagerAPI, ServiceLayer, "Использует бизнес-логику сервиса")
+Rel(DeviceMonitoringAPI, ServiceLayer, "Использует бизнес-логику сервиса")
+Rel(QueueListener, ServiceLayer, "Использует бизнес-логику сервиса")
+Rel(QueueListener, DeviceMQ, "Получение уведомлений от устройств")
+Rel(ServiceLayer, RepositoryLayer, "Чтение/запись данных")
+Rel(ServiceLayer, DeviceApi, "Осуществляет управление устройствами")
+Rel(DeviceApi, DeviceMQ, "Публикация уведомлений от устройств")
+Rel(RepositoryLayer, DeviceDB, "Чтение/запись данных")
+@enduml

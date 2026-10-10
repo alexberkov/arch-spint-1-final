@@ -1,0 +1,58 @@
+@startuml
+title WarmHouse DeviceManager Code Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+class DeviceType {
+  +id: int
+  +name: string
+  +info: string
+}
+
+class Device {
+  +id: int
+  +type: DeviceType
+  +house: House
+  +user: User
+  +serial_number: string
+  +status: bool
+  +void register()
+  +void update()
+  +void delete()
+  +bool get_status()
+  +void set_status()
+}
+
+class House {
+  +id: int
+  +address: string
+  +user: User
+  +devices: List<Device>
+  +void add_device()
+  +remove_device()
+}
+
+class User {
+  +id: int
+  +name: string
+  +surname: string
+  +email: string
+  +houses: List<House>
+}
+
+class DeviceControllerModule {
+  +void register_device()
+  +void update_device()
+  +void remove_device()
+}
+
+
+DeviceControllerModule --> Device : использует
+
+Device --> House: содержит
+Device --> DeviceType: содержит
+Device --> User: содержит
+
+@enduml

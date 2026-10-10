@@ -1,0 +1,78 @@
+@startuml
+title WarmHouse Container Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "User", "Пользователь системы 'Теплый дом'")
+Person(admin, "Administrator", "Специалист поддержки 'Теплый дом'")
+System(WarmHouseSystem, "WarmHouse System", "Система управления отоплением и контроля температуры")
+
+Container_Boundary(WarmHouseSystem, "WarmHouse System") {
+  Container(WebApp, "Web Application", "JavaScript, React", "Веб-интерфейс для управления устройствами и мониторинга")
+  Container(MobileApp, "Mobile Application", "Kotlin, Swift", "Мобильное приложение для управления устройствами и мониторинга")
+
+  Container(Gateway, "API Gateway", "Nginx", "Маршрутизатор для обработки потока запросов")
+
+  Container(AdminPanel, "Admin Panel", "Python, Django", "Панель администратора для упраления данными устройств и пользователей")
+  Container(AuthService, "Auth Service", "Python, FastAPI", "Сервис авторизации и аутентификации пользователей")
+
+  Container(TemperatureService, "Temperature Service", "Python, FastAPI", "Сервис мониторинга температуры в доме")
+  Container(HeatingService, "Heating Service", "Python, FastAPI", "Сервис управления отоплением в доме")
+  Container(LightingService, "Lighting Service", "Python, FastAPI", "Сервис управления освещением в доме")
+  Container(GateService, "Gate Service", "Python, FastAPI", "Сервис управления воротами")
+  Container(VideoService, "Video Service", "C++, Boost", "Сервис видео-наблюдения на территории дома")
+
+  Container(DeviceMessagingQueue, "Device MQ", "RabbitMQ", "Очередь сообщений для получения уведомлений с устройств")
+
+  ContainerDb(DeviceDB, "Device Database", "PostgreSQL", "База данных устройств")
+  ContainerDb(UserDB, "User Database", "PostgreSQL", "База данных пользователей")
+}
+
+System_Ext(DeviceApi, "Device API", "API для управления устройствами")
+
+Rel(user, WebApp, "Управляет устройствами и контролирует температуру")
+Rel(user, MobileApp, "Управляет устройствами и контролирует температуру")
+
+Rel(admin, AdminPanel, "Осуществляет поддержку пользователей при работе с системой")
+
+Rel(WebApp, Gateway, "Передает запросы пользователей", "HTTPS, JSON")
+Rel(MobileApp, Gateway, "Передает запросы пользователей", "HTTPS, JSON")
+
+Rel(Gateway, TemperatureService, "Передает запросы по мониторингу температуры", "HTTPS, JSON")
+Rel(Gateway, HeatingService, "Передает запросы по управлению отоплением", "HTTPS, JSON")
+Rel(Gateway, LightingService, "Передает запросы по управлению освещение", "HTTPS, JSON")
+Rel(Gateway, GateService, "Передает запросы по управлению воротами", "HTTPS, JSON")
+Rel(Gateway, VideoService, "Передает запросы по управлению камерами видеонаблюдения", "HTTPS, JSON")
+Rel(Gateway, AuthService, "Передает запросы авторизации/аутентификации", "HTTPS, JSON")
+
+System_Ext(CameraApi, "Camera API", "API для управления и получения потоковых данных с камер наблюдения")
+Rel(MobileApp, CameraApi, "Получает изображение с камер видеоднаблюдения", "UDP")
+Rel(WebApp, CameraApi, "Получает изображение с камер видеоднаблюдения", "UDP")
+Rel(VideoService, CameraApi, "Управляет камерами наблюдения")
+Rel(CameraApi, DeviceMessagingQueue, "Публикация уведомлений от устройств")
+
+Rel(HeatingService, DeviceDB, "Чтение/запись информации об устройствах")
+Rel(LightingService, DeviceDB, "Чтение/запись информации об устройствах")
+Rel(GateService, DeviceDB, "Чтение/запись информации об устройствах")
+Rel(VideoService, DeviceDB, "Чтение/запись информации об устройствах")
+Rel(TemperatureService, DeviceDB, "Чтение/запись информации о датчиках")
+
+Rel(AuthService, UserDB, "Чтение/запись информации об пользователях")
+Rel(AdminPanel, UserDB, "Чтение/запись информации об пользователях")
+
+Rel(TemperatureService, DeviceMessagingQueue, "Получение показаний датчиков")
+
+Rel(LightingService, DeviceMessagingQueue, "Получение уведомлений с устройств")
+Rel(GateService, DeviceMessagingQueue, "Получение уведомлений с устройств")
+Rel(VideoService, DeviceMessagingQueue, "Получение уведомлений с устройств")
+Rel(HeatingService, DeviceMessagingQueue, "Получение уведомлений с устройств")
+
+Rel(DeviceApi, DeviceMessagingQueue, "Публикация уведомлений от устройств")
+
+Rel(HeatingService, DeviceApi, "Управляет отоплением")
+Rel(LightingService, DeviceApi, "Управляет освещением")
+Rel(GateService, DeviceApi, "Управляет воротами")
+
+@enduml
