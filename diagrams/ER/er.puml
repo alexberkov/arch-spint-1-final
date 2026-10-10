@@ -1,0 +1,76 @@
+@startuml
+title WarmHouse ER Diagram
+
+top to bottom direction
+
+class DeviceType {
+  +id: int
+  +name: string
+  +info: text
+}
+
+class SensorType {
+  +id: int
+  +name: string
+  +info: text
+}
+
+class Device {
+  +id: int
+  +type_id: int
+  +house_id: int
+  +user_id: int
+  +serial_number: string
+  +status: bool
+}
+
+class Sensor {
+  +id: int
+  +type_id: int
+  +house_id: int
+  +user_id: int
+  +serial_number: string
+  +value: float
+}
+
+class House {
+  +id: int
+  +address: string
+  +user_id: int
+}
+
+class User {
+  +id: int
+  +name: string
+  +surname: string
+  +email: string
+  +subscription_id: int
+}
+
+class Subscription {
+  +id: int
+  +user_id: int
+  +payment_type_id: int
+  +active: bool
+  +expiration_date: datetime
+}
+
+class PaymentType {
+  +id: int
+  +name: string
+  +info: text
+}
+
+
+Device --> DeviceType: содержит
+Sensor --> SensorType: содержит
+
+House --> Device: принадлежит
+House --> Sensor: принадлежит
+
+User --> House: принадлежит
+User --> Subscription: принадлежит
+
+Subscription --> PaymentType: содержит
+
+@enduml
