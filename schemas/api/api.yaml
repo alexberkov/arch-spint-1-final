@@ -1,0 +1,282 @@
+openapi: 3.2.0
+
+info:
+  title: WarmHouse Device API
+  description: API for managing devices within the WarmHouse smart home system.
+  version: 1.0.0
+
+servers:
+  - url: https://warmhouse.ru/api/v1
+    description: Production server
+  - url: https://dev.warmhouse.ru/api/v1
+    description: Staging server
+
+tags:
+  - name: device
+    summary: device management operations
+    description: Manage your WarmHouse devices.
+
+paths:
+
+  /device:
+
+    patch:
+      tags:
+        - device
+      summary: Update existing device info.
+      description: Update existing device info by ID.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '400':
+          description: Invalid request data
+        '404':
+          description: Device not found
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      tags:
+        - device
+      summary: Add a new device.
+      description: Add a new device to house.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '400':
+          description: Invalid request data
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
+  /device/{device_id}:
+    get:
+      tags:
+        - device
+      summary: Find device by ID.
+      description: Returns a single device.
+      parameters:
+        - name: device_id
+          in: path
+          description: ID of device to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '400':
+          description: Invalid request data
+        '404':
+          description: Device not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      tags:
+        - device
+      summary: Deletes a device.
+      description: Delete an existing device.
+      parameters:
+        - name: device_id
+          in: path
+          description: ID of device to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Device not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /device/{device_id}/status:
+    get:
+      tags:
+        - device
+      summary: Get device status
+      description: Get status of an existing device by ID.
+      parameters:
+        - name: device_id
+          in: path
+          description: ID of device to get status
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Invalid request data
+        '404':
+          description: Device not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      tags:
+        - device
+      summary: Set device status
+      description: Set status of an existing device by ID.
+      parameters:
+        - name: device_id
+          in: path
+          description: ID of device to set status
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Status'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Invalid request data
+        '404':
+          description: Device not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
+  /house/{house_id}/devices:
+    get:
+      tags:
+        - house
+      summary: Returns a list of devices in a house.
+      description: Returns a list of devices in a house.
+      parameters:
+        - name: house_id
+          in: path
+          description: ID of house
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+        '400':
+          description: Invalid request data
+        '404':
+          description: House not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Device:
+      type: object
+      properties:
+        id:
+          type: integer
+        type_id:
+          type: integer
+        house_id:
+          type: integer
+        user_id:
+          type: integer
+        serial_number:
+          type: string
+        status:
+          type: boolean
+      required:
+        - id
+        - house_id
+        - type_id
+        - user_id
+
+    Status:
+      type: object
+      properties:
+        device_id:
+          type: integer
+        value:
+          type: boolean
+      required:
+        - device_id
+        - value
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+      required:
+        - code
+        - message
